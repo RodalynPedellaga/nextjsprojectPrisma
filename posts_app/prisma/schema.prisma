@@ -9,13 +9,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
 }
 
 model Post {
   id String @id @default(cuid())
   title String
-  content String? @db.LongText
+  content String?
   published Boolean @default(false)
   comments Comment[]
 

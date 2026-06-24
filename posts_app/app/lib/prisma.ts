@@ -1,7 +1,20 @@
 import { PrismaClient } from "../generated/prisma";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+
+const getDatabaseUrl = () => {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error("DATABASE_URL is required for Prisma client initialization.");
+  }
+  return url;
+};
 
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient({
+    adapter: new PrismaBetterSqlite3({
+      url: getDatabaseUrl(),
+    }),
+  });
 };
 
 declare global {

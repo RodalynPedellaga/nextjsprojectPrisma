@@ -22,7 +22,7 @@ export default async function DraftsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-3xl">
       <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <h1 className="text-3xl font-semibold text-slate-950">Drafts</h1>
         <p className="mt-2 text-slate-600">
