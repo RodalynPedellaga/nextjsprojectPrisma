@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
 }
 
 model Post {
@@ -30,3 +30,5 @@ model Comment {
   published Boolean @default(false)
   @@map(name: "comments")
 }
+
+

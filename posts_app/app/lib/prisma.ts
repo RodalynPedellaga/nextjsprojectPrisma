@@ -1,5 +1,8 @@
+import { config } from "dotenv";
 import { PrismaClient } from "../generated/prisma";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+
+config({ path: [".env.local", ".env"] });
 
 const getDatabaseUrl = () => {
   const url = process.env.DATABASE_URL;
@@ -11,9 +14,7 @@ const getDatabaseUrl = () => {
 
 const prismaClientSingleton = () => {
   return new PrismaClient({
-    adapter: new PrismaBetterSqlite3({
-      url: getDatabaseUrl(),
-    }),
+    adapter: new PrismaMariaDb(getDatabaseUrl()),
   });
 };
 

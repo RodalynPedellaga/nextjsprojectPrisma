@@ -14,10 +14,31 @@ async function deletePost(data: FormData) {
   redirect("/");
 }
 
+async function addComment(data: FormData) {
+  "use server";
+
+  const postId = data.get("postId");
+  const content = data.get("content");
+  if (typeof postId !== "string" || typeof content !== "string" || content.trim() === "") return;
+
+  await prisma.comment.create({
+    data: {
+      content: content.trim(),
+      postId: postId,
+      published: true,
+    },
+  });
+
+  redirect("/");
+}
+
 export default async function Home() {
   const posts = await prisma.post.findMany({
     where: { published: true },
     orderBy: { id: "desc" },
+    include: {
+      comments: { where: { published: true }, orderBy: { id: "desc" } },
+    },
   });
 
   return (
@@ -46,15 +67,40 @@ export default async function Home() {
               <p className="mt-4 text-slate-700 whitespace-pre-wrap">
                 {post.content || "No content provided."}
               </p>
-              <form action={deletePost} className="mt-6">
-                <input type="hidden" name="postId" value={post.id} />
-                <button
-                  type="submit"
-                  className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-                >
-                  Delete
-                </button>
-              </form>
+              <div className="mt-6 flex items-center gap-4">
+                <form action={addComment} className="flex items-center gap-2">
+                  <input type="hidden" name="postId" value={post.id} />
+                  <input
+                    name="content"
+                    placeholder="Add comment..."
+                    className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700 focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-full bg-sky-500 text-white px-4 py-2 text-sm font-semibold hover:bg-sky-600"
+                  >
+                    Comment
+                  </button>
+                </form>
+
+                <form action={deletePost}>
+                  <input type="hidden" name="postId" value={post.id} />
+                  <button
+                    type="submit"
+                    className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+
+              {post.comments && post.comments.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  {post.comments.map((c) => (
+                    <div key={c.id} className="text-sm text-slate-700">• {c.content}</div>
+                  ))}
+                </div>
+              )}
             </article>
           ))}
         </div>
